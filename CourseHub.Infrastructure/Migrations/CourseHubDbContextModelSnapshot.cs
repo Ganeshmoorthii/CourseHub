@@ -53,18 +53,30 @@ namespace CourseHub.Infrastructure.Migrations
 
             modelBuilder.Entity("CourseHub.Domain.Entities.Enrollment", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("CourseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("EnrolledOn")
+                    b.Property<DateTime>("EnrolledAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("UserId", "CourseId");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("UserId", "CourseId")
+                        .IsUnique();
 
                     b.ToTable("Enrollments");
                 });

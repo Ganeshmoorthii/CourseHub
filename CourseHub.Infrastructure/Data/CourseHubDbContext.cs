@@ -47,7 +47,8 @@ namespace CourseHub.Infrastructure.Data
 
             // Many to Many relationship between User and Course through Enrollment
             modelBuilder.Entity<Enrollment>()
-                .HasKey(e => new { e.UserId, e.CourseId });
+                .HasIndex(e => new { e.UserId, e.CourseId })
+                .IsUnique();
 
             modelBuilder.Entity<Course>()
                 .Property(c => c.Price)

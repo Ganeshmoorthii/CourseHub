@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CourseHub.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialCommit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -85,13 +85,15 @@ namespace CourseHub.Infrastructure.Migrations
                 name: "Enrollments",
                 columns: table => new
                 {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CourseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    EnrolledOn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    EnrolledAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Enrollments", x => new { x.UserId, x.CourseId });
+                    table.PrimaryKey("PK_Enrollments", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Enrollments_Courses_CourseId",
                         column: x => x.CourseId,
@@ -115,6 +117,12 @@ namespace CourseHub.Infrastructure.Migrations
                 name: "IX_Enrollments_CourseId",
                 table: "Enrollments",
                 column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Enrollments_UserId_CourseId",
+                table: "Enrollments",
+                columns: new[] { "UserId", "CourseId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserProfiles_UserId",
