@@ -1,6 +1,7 @@
 ﻿using CourseHub.Application.DTOs.Request;
 using CourseHub.Domain.Entities;
 using CourseHub.Infrastructure.Data;
+using CourseHub.Infrastructure.IRepository;
 using Microsoft.EntityFrameworkCore;
 
 public class UserRepository : IUserRepository
@@ -34,7 +35,7 @@ public class UserRepository : IUserRepository
     }
 
     public async Task<(List<User> Users, int TotalCount)> SearchUsersAsync(
-        UserSearchRequestDTO request)
+    UserSearchRequestDTO request)
     {
         var query = _dbContext.Users
             .Include(u => u.Profile)
@@ -50,16 +51,10 @@ public class UserRepository : IUserRepository
             query = query.Where(u => u.Email.Contains(request.Email));
 
         if (request.DateOfBirth.HasValue)
-            query = query.Where(u => u.Profile != null &&
-                                     u.Profile.DateOfBirth == request.DateOfBirth);
-
-        if (request.EnrolledFrom.HasValue)
-            query = query.Where(u =>
-                u.Enrollments.Any(e => e.EnrolledAt >= request.EnrolledFrom));
-
-        if (request.EnrolledTo.HasValue)
-            query = query.Where(u =>
-                u.Enrollments.Any(e => e.EnrolledAt <= request.EnrolledTo));
+        {
+            var dob = request.DateOfBirth.Value;
+            query = query.Where(u => u.Profile != null && u.Profile.DateOfBirth == dob);
+        }
 
         if (!string.IsNullOrWhiteSpace(request.CourseTitle))
             query = query.Where(u =>
@@ -78,6 +73,14 @@ public class UserRepository : IUserRepository
         if (request.PriceTo.HasValue)
             query = query.Where(u =>
                 u.Enrollments.Any(e => e.Course.Price <= request.PriceTo));
+
+        if (request.EnrolledFrom.HasValue)
+            query = query.Where(u =>
+                u.Enrollments.Any(e => e.EnrolledAt >= request.EnrolledFrom));
+
+        if (request.EnrolledTo.HasValue)
+            query = query.Where(u =>
+                u.Enrollments.Any(e => e.EnrolledAt <= request.EnrolledTo));
 
         var totalCount = await query.CountAsync();
 

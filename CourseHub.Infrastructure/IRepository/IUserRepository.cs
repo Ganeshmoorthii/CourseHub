@@ -1,15 +1,15 @@
-﻿using CourseHub.Application.DTOs.Request;
-using CourseHub.Domain.Entities;
+﻿using CourseHub.Domain.Entities;
+using CourseHub.Application.DTOs.Request;
 
-public interface IUserRepository
+namespace CourseHub.Infrastructure.IRepository
 {
-    Task AddUserAsync(User newUser);
+    public interface IUserRepository
+    {
+        Task AddUserAsync(User newUser);
+        Task<bool> ExistsAsync(Guid userId);
+        Task<User?> GetUserWithProfileAndEnrollmentsAsync(Guid userId);
 
-    Task<bool> ExistsAsync(Guid userId);
-
-    Task<User?> GetUserWithProfileAndEnrollmentsAsync(Guid userId);
-
-    Task<(List<User> Users, int TotalCount)> SearchUsersAsync(
-        UserSearchRequestDTO request
-    );
+        Task<(List<User> Users, int TotalCount)> SearchUsersAsync(
+            UserSearchRequestDTO request);
+    }
 }

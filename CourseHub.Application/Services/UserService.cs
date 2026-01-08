@@ -34,7 +34,7 @@ public class UserService : IUserService
     }
 
     public async Task<PagedResult<UserSearchDTO>> SearchUsersAsync(
-        UserSearchRequestDTO request)
+     UserSearchRequestDTO request)
     {
         if (request.Page <= 0 || request.PageSize <= 0)
             throw new ValidationException("Invalid pagination values.");
@@ -49,7 +49,7 @@ public class UserService : IUserService
             Email = user.Email,
             Profile = user.Profile == null ? null : new UserProfileInfoDTO
             {
-                FullName = user.Profile.FirstName,
+                FullName = $"{user.Profile.FirstName} {user.Profile.LastName}",
                 Bio = user.Profile.Bio,
                 DateOfBirth = user.Profile.DateOfBirth
             },

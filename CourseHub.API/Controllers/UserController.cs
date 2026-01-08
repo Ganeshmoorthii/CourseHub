@@ -53,14 +53,9 @@ namespace CourseHub.API.Controllers
         /// <response code="200">Users retrieved successfully</response>
         /// <response code="400">Validation failed (handled globally)</response>
         [HttpPost("search")]
-        [ProducesResponseType(
-            typeof(ApiResponse<PagedResult<UserSearchDTO>>),
-            StatusCodes.Status200OK)]
-        [ProducesResponseType(
-            typeof(ErrorResponse),
-            StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> SearchUsers(
-            [FromBody] UserSearchRequestDTO request)
+        [ProducesResponseType(typeof(ApiResponse<PagedResult<UserSearchDTO>>),StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> SearchUsers([FromBody] UserSearchRequestDTO request)
         {
             _logger.LogInformation("SearchUsers endpoint called.");
 
