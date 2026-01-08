@@ -15,6 +15,15 @@ namespace CourseHub.API.Controllers
             _logger = logger;
             _searchService = searchService;
         }
+
+        /// <summary>
+        /// Search User Details By UserId
+        /// </summary>
+        /// <param name="id">User Id</param>
+        /// <returns>User object</returns>
+        /// <response code="200">User found</response>
+        /// <response code="400">Validation failed (custom exception handled globally)</response>
+        /// <response code="404">Resource not found (custom exception handled globally)</response>
         [HttpGet("{userId}")]
         public async Task<IActionResult> SearchUserDetails(Guid userId)
         {

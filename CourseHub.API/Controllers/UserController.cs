@@ -16,8 +16,17 @@ namespace CourseHub.API.Controllers
             _logger = logger;
             _userService = userService;
         }
+
+        /// <summary>
+        /// Create a new user
+        /// </summary>
+        /// <param name="dto">User creation DTO</param>
+        /// <returns>Returns 200 if user created successfully</returns>
+        /// <response code="200">User created successfully</response>
+        /// <response code="400">Validation failed (custom exception handled globally)</response>
+        /// <response code="404">Resource not found (custom exception handled globally)</response>
         [HttpPost]
-        public async Task<IActionResult> CreateUser(CreateUserRequestDTO dto)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestDTO dto)
         {
             _logger.LogInformation("CreateUser endpoint called.");
             await _userService.CreateUserAsync(dto);

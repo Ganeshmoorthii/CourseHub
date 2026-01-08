@@ -16,6 +16,15 @@ namespace CourseHub.API.Controllers
             _instructorService = instructorService;
             _logger = logger;
         }
+
+        /// <summary>
+        /// Create a new instructor
+        /// </summary>
+        /// <param name="dto">Instructor creation DTO</param>
+        /// <returns>Created Instructor</returns>
+        /// <response code="200">Instructor created successfully</response>
+        /// <response code="400">Validation failed (custom exception handled globally)</response>
+        /// <response code="404">Resource not found (custom exception handled globally)</response>
         [HttpPost]
         public async Task<IActionResult> CreateInstructor(CreateInstructorRequestDTO dto)
         {

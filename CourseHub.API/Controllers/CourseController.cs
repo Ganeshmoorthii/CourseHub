@@ -9,7 +9,6 @@ namespace CourseHub.API.Controllers
     [ApiController]
     public class CourseController : ControllerBase
     {
-        /// <summary>
         private readonly ILogger<CourseController> _logger;
         private readonly ICourseService _courseService;
         public CourseController(ILogger<CourseController> logger, ICourseService courseService)
@@ -18,6 +17,14 @@ namespace CourseHub.API.Controllers
             _courseService = courseService;
         }
 
+        /// <summary>
+        /// Create a new course
+        /// </summary>
+        /// <param name="dto">Course creation DTO</param>
+        /// <returns>Created course</returns>
+        /// <response code="200">Course created successfully</response>
+        /// <response code="400">Validation failed (custom exception handled globally)</response>
+        /// <response code="404">Resource not found (custom exception handled globally)</response>
         [HttpPost]
         public async Task<IActionResult> CreateCourse([FromBody] CreateCourseRequestDTO courseRequestDTO)
         {
