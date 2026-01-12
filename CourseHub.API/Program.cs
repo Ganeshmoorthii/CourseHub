@@ -7,6 +7,7 @@ using CourseHub.Infrastructure.Data;
 using CourseHub.Infrastructure.IRepository;
 using CourseHub.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,14 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<CourseHubDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.AllowAnyHeader().AllowCredentials().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200/");
+    });
+});
+
 var app = builder.Build();
 
 // Global exception handler.
@@ -47,6 +56,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
 

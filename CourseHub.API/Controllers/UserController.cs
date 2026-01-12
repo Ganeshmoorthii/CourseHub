@@ -3,6 +3,7 @@ using CourseHub.Application.Contracts;
 using CourseHub.Application.DTOs.Request;
 using CourseHub.Application.DTOs.Response;
 using CourseHub.Application.IServices;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace CourseHub.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("CorsPolicy")]
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
