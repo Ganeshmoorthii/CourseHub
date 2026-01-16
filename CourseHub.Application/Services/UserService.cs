@@ -6,6 +6,7 @@ using CourseHub.Application.Exceptions;
 using CourseHub.Application.IServices;
 using CourseHub.Domain.Entities;
 using CourseHub.Infrastructure.IRepository;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using System.Security.Cryptography;
 using System.Text;
@@ -14,16 +15,18 @@ using System.Text.Json;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
-    private readonly IMemoryCache _memoryCache;
+    //private readonly IMemoryCache _memoryCache;
+    private readonly IDistributedCache _cache;
     private readonly IMapper _mapper;
     private const string SEARCH_CACHE_KEY_PREFIX = "user_search_";
     private const int CACHE_DURATION_MINUTES = 10;
 
-    public UserService(IUserRepository userRepository, IMapper mapper, IMemoryCache memoryCache)
+    public UserService(IUserRepository userRepository, IMapper mapper, IDistributedCache cache)
     {
         _userRepository = userRepository;
         _mapper = mapper;
-        _memoryCache = memoryCache;
+        //_memoryCache = memoryCache;
+        _cache = cache;
     }
 
     public async Task CreateUserAsync(CreateUserRequestDTO dto)
@@ -50,10 +53,20 @@ public class UserService : IUserService
 
         var cacheKey = GenerateCacheKey(request);
 
-        if (_memoryCache.TryGetValue(cacheKey, out PagedResult<UserSearchDTO>? cachedResult))
+        var cachedData = await _cache.GetStringAsync(cacheKey);
+
+        if(cachedData != null)
         {
-            return cachedResult!;
+            var cachedResult = JsonSerializer.Deserialize<PagedResult<UserSearchDTO>>(cachedData);
+            if (cachedResult != null)
+            {
+                return cachedResult;
+            }
         }
+        //if (_memoryCache.TryGetValue(cacheKey, out PagedResult<UserSearchDTO>? cachedResult))
+        //{
+        //    return cachedResult!;
+        //}
 
         var (users, totalCount) = await _userRepository.SearchUsersAsync(request);
 
@@ -88,10 +101,15 @@ public class UserService : IUserService
             request.PageSize
         );
 
-        var cacheOptions = new MemoryCacheEntryOptions()
+        //var cacheOptions = new MemoryCacheEntryOptions()
+        //    .SetAbsoluteExpiration(TimeSpan.FromMinutes(CACHE_DURATION_MINUTES));
+
+        //_memoryCache.Set(cacheKey, result, cacheOptions);
+
+        var options = new DistributedCacheEntryOptions()
             .SetAbsoluteExpiration(TimeSpan.FromMinutes(CACHE_DURATION_MINUTES));
 
-        _memoryCache.Set(cacheKey, result, cacheOptions);
+        await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(result), options);
 
         return result;
     }
