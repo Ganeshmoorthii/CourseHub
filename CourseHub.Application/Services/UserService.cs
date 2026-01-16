@@ -51,6 +51,19 @@ public class UserService : IUserService
         if (request.Page <= 0 || request.PageSize <= 0)
             throw new ValidationException("Invalid pagination values.");
 
+        bool hasAnyFilter = request.Id.HasValue || !string.IsNullOrWhiteSpace(request.UserName) ||
+            !string.IsNullOrWhiteSpace(request.Email) ||
+            request.DateOfBirth.HasValue ||
+            !string.IsNullOrWhiteSpace(request.CourseTitle) ||
+            !string.IsNullOrWhiteSpace(request.InstructorName) ||
+            request.PriceFrom.HasValue ||
+            request.PriceTo.HasValue ||
+            request.EnrolledFrom.HasValue ||
+            request.EnrolledTo.HasValue;
+
+        if (!hasAnyFilter)
+            throw new ValidationException("At least one search parameter must be provided.");
+
         var cacheKey = GenerateCacheKey(request);
 
         var cachedData = await _cache.GetStringAsync(cacheKey);
